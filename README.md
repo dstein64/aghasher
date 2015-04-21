@@ -1,7 +1,7 @@
 ﻿PyAnchorGraphHasher
 =================
 
-An implementation of the AGH-1 algorithm, presented in *Hashing with Graphs* (Liu et al. 2011).
+An implementation of the Anchor Graph Hashing algorithm (AGH-1), presented in *Hashing with Graphs* (Liu et al. 2011).
 
 Dependencies
 ------------
