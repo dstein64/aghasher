@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+</head>
+<body>
+<h1 id="pyanchorgraphhasher">PyAnchorGraphHasher</h1>
+<p>An implementation of the AGH-1 algorithm, presented in <em>Hashing with Graphs</em> (Liu et al. 2011).</p>
+<h2 id="dependencies">Dependencies</h2>
+<p>PyAnchorGraphHasher requires Python 2.7 with numpy and scipy. These should be linked with a BLAS implementation (e.g., OpenBLAS, ATLAS, Intel MKL). Without being linked to BLAS, numpy/scipy will use a fallback that causes PyAnchorGraphHasher to run over 50x slower. If BLAS is not linked, a warning message will be displayed when running the code.</p>
+<p>The latter packages can be installed with pip.</p>
+<pre><code>$ pip install numpy scipy</code></pre>
+<p>Or on Ubuntu using apt-get.</p>
+<pre><code>$ apt-get install python-numpy python-scipy</code></pre>
+<p>Or on OS X using macports.</p>
+<pre><code>$ port install py-numpy py-scipy</code></pre>
+<p>or brew.</p>
+<pre><code>$ brew install numpy scipy</code></pre>
+<h2 id="how-to-use">How To Use</h2>
+<p>To use PyAnchorGraphHasher, first import the <em>aghasher</em> module.</p>
+<pre><code>import aghasher</code></pre>
+<h3 id="training-a-model">Training a Model</h3>
+<p>An AnchorGraphHasher is constructed using the <em>train</em> method, which returns an AnchorGraphHasher and the hash bit embedding for the training data.</p>
+<pre><code>(agh, trainY) = aghasher.AnchorGraphHasher.train(traindata, anchors, numbits, nnanchors, sigma)</code></pre>
+<p>AnchorGraphHasher.train takes 5 arguments:</p>
+<ul>
+<li><strong>traindata</strong> An <em>n-by-d</em> numpy.ndarray with training data. The rows correspond to observations, and the columns correspond to dimensions.</li>
+<li><strong>anchors</strong> An <em>m-by-d</em> numpy.ndarray with anchors. <em>m</em> is the total number of anchors. Rows correspond to anchors, and columns correspond to dimensions. The dimensionality of the anchors much match the dimensionality of the training data.</li>
+<li><strong>numbits</strong> (optional; defaults to 12) Number of hash bits for the embedding.</li>
+<li><strong>nnanchors</strong> (optional; defaults to 2) Number of nearest anchors that are used for approximating the neighborhood structure.</li>
+<li><strong>sigma</strong> (optional; defaults to <em>None</em>) sigma for the Gaussian radial basis function that is used to determine similarity between points. When sigma is specified as <em>None</em>, the code will automatically set a value, depending on the training data and anchors.</li>
+</ul>
+<h3 id="hashing-data-with-an-anchorgraphhasher-model">Hashing Data with an AnchorGraphHasher Model</h3>
+<p>With an AnchorGraphHasher object, which has variable name <em>agh</em> in the preceding and following examples, hashing out-of-sample data is done with the object's <em>hash</em> method.</p>
+<pre><code>agh.hash(data)</code></pre>
+<p>The hash method takes one argument:</p>
+<ul>
+<li><strong>data</strong> An <em>n-by-d</em> numpy.ndarray with data. The rows correspond to observations, and the columns correspond to dimensions. The dimensionality of the data much match the dimensionality of the training data used to train the AnchorGraphHasher.</li>
+</ul>
+<p>Since Python does not have a native bit vector data structure, the hash method returns an <em>n-by-r</em> numpy.ndarray, where <em>n</em> is the number of observations in <em>data</em>, and <em>r</em> is the number of hash bits specified when the model was trained. The elements of the returned array are boolean values that correspond to bits.</p>
+<h3 id="testing-an-anchorgraphhasher-model">Testing an AnchorGraphHasher Model</h3>
+<p>Testing is performed with the AnchorGraphHasher.test method.</p>
+<pre><code>precision = AnchorGraphHasher.test(trainY, testY, traingnd, testgnd, precisionradius)</code></pre>
+<p>AnchorGraphHasher.test takes 5 arguments:</p>
+<ul>
+<li><strong>trainY</strong> An <em>n-by-r</em> numpy.ndarray with the hash bit embedding corresponding to the training data. The rows correspond to the <em>n</em> observations, and the columns correspond to the <em>r</em> hash bits.</li>
+<li><strong>testY</strong> An <em>m-by-r</em> numpy.ndarray with the hash bit embedding corresponding to the testing data. The rows correspond to the <em>m</em> observations, and the columns correspond to the <em>r</em> hash bits.</li>
+<li><strong>traingnd</strong> An <em>n-by-1</em> numpy.ndarray with the ground truth labels for the training data.</li>
+<li><strong>testgnd</strong> An <em>m-by-1</em> numpy.ndarray with the ground truth labels for the testing data.</li>
+<li><strong>radius</strong> (optional; defaults to 2) Hamming radius to use for calculating precision.</li>
+</ul>
+<h3 id="executing-aghasher.py">Executing aghasher.py</h3>
+<p><em>aghasher.py</em> can be executed from the command line.</p>
+<pre><code>$ python aghasher.py</code></pre>
+<p>Running aghasher.py runs the __main__ code, which uses an AnchorGraphHasher to replicate the training/testing performed in the Matlab code.</p>
+<p>Training and testing the algorithm uses the MNIST handwritten digit dataset, testing with a Hamming radius 2 precision. Results are output to stdout.</p>
+<p>The code in the __main__ section serves as an example of how to use AnchorGraphHasher.</p>
+<h2 id="differences-from-the-matlab-implementation">Differences from the Matlab Implementation</h2>
+<p>The code is structured differently than the Matlab reference implementation.</p>
+<p>The Matlab code implements an additional hashing method, hierarchical hashing, which is referred to as 2-AGH. This is an extension of 1-AGH, and is currently not implemented in Python.</p>
+<p>There is one functional difference relative to the Matlab code. If <em>sigma</em> is specified (as opposed to being auto-estimated), then for the same value of <em>sigma</em>, the Matlab and Python code will produce different results. They will produce the same results when the Matlab <em>sigma</em> is sqrt(2) times bigger than the manually specified <em>sigma</em> in the Python code. This is because in the Gaussian RBF kernel, the Python code uses a 2 in the denominator of the exponent, and the Matlab code does not. A 2 was included in the denominator of the Python code, as that is the canonical way to use an RBF kernel.</p>
+<h1 id="references">References</h1>
+<p>Liu, Wei, Jun Wang, Sanjiv Kumar, and Shih-Fu Chang. 2011. “Hashing with Graphs.” In Proceedings of the 28th International Conference on Machine Learning (ICML-11), edited by Lise Getoor and Tobias Scheffer, 1–8. ICML ’11. New York, NY, USA: ACM.</p>
+</body>
+</html>
