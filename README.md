@@ -79,8 +79,6 @@ AnchorGraphHasher.test takes 5 arguments:
     
 Running aghasher.py runs the \__main__ code, which uses an AnchorGraphHasher to replicate the training/testing performed in the Matlab code.
 
-Training and testing the algorithm uses the MNIST handwritten digit dataset, testing with a Hamming radius 2 precision. Results are output to stdout.
-
 The code in the \__main__ section serves as an example of how to use AnchorGraphHasher.
 
 Differences from the Matlab Implementation
