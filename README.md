@@ -90,6 +90,13 @@ The Matlab code implements an additional hashing method, hierarchical hashing, w
 
 There is one functional difference relative to the Matlab code. If *sigma* is specified (as opposed to being auto-estimated), then for the same value of *sigma*, the Matlab and Python code will produce different results. They will produce the same results when the Matlab *sigma* is sqrt(2) times bigger than the manually specified *sigma* in the Python code. This is because in the Gaussian RBF kernel, the Python code uses a 2 in the denominator of the exponent, and the Matlab code does not. A 2 was included in the denominator of the Python code, as that is the canonical way to use an RBF kernel.
 
+License
+-------
+
+PyAnchorGraphHasher has an [MIT License](https://en.wikipedia.org/wiki/MIT_License).
+
+See [LICENSE](LICENSE).
+
 References
 ==========
 
