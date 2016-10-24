@@ -1,5 +1,5 @@
-﻿PyAnchorGraphHasher
-=================
+PyAnchorGraphHasher
+===================
 
 An implementation of the Anchor Graph Hashing algorithm (AGH-1), presented in *Hashing with Graphs* (Liu et al. 2011).
 
@@ -98,7 +98,7 @@ PyAnchorGraphHasher has an [MIT License](https://en.wikipedia.org/wiki/MIT_Licen
 See [LICENSE](LICENSE).
 
 References
-==========
+----------
 
 Liu, Wei, Jun Wang, Sanjiv Kumar, and Shih-Fu Chang. 2011. “Hashing with Graphs.” In Proceedings of the 28th International Conference on Machine Learning (ICML-11), edited by Lise Getoor and Tobias Scheffer, 1–8. ICML ’11. New York, NY, USA: ACM.
 
