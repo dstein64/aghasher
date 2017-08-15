@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import scipy.sparse
 import scipy.linalg
@@ -17,9 +19,11 @@ class AnchorGraphHasher:
   def train(cls, traindata, anchors, numhashbits=12,
             nnanchors=2, sigma=None):
     m = anchors.shape[0]
-    # numhashbits must be less than num anchors because we get m-1 eigenvalues from an m-by-m matrix. (m-1 since we omit eigenvalue=1)
+    # numhashbits must be less than num anchors because we get m-1
+    # eigenvalues from an m-by-m matrix. (m-1 since we omit eigenvalue=1)
     if numhashbits >= m:
-      valerr = 'The number of hash bits (%s) must be less than the number of anchors (%s).' % (numhashbits, m)
+      valerr = ('The number of hash bits ({}) must be less than the number of '
+                'anchors ({}).').format(numhashbits, m)
       raise ValueError(valerr)
     (Z, sigma) = cls._Z(traindata, anchors, nnanchors, sigma)
     W = cls._W(Z, numhashbits)
@@ -43,12 +47,6 @@ class AnchorGraphHasher:
     traingnd = traingnd.ravel()
     ntest = testY.shape[0]
     
-    # Here's how to use Hamming dist built into numpy, but it is twice as slow as yours
-    #dim = trainY.shape[1]
-    #hamdis = scipy.spatial.distance.cdist(trainY, testY, 'hamming')    
-    #hamdis = dim * hamdis
-    #hamdis = (hamdis+.1).astype(np.int) # convert to int but make sure no rounding issues by adding .1 first
-    
     hamdis = utils.pdist2(trainY, testY, 'hamming')
     
     precision = np.zeros(ntest)
@@ -59,13 +57,15 @@ class AnchorGraphHasher:
       if ln == 0:
         precision[j] = 0
       else:
-        precision[j] = len(np.flatnonzero(traingnd[lst] == testgnd[j])) / float(ln)
+        numerator = len(np.flatnonzero(traingnd[lst] == testgnd[j]))
+        precision[j] = numerator / float(ln)
         
     return np.mean(precision)
   
   @staticmethod
   def _W(Z, numhashbits):
-    s = np.asarray(Z.sum(0)).ravel() # extra steps here are for compatibility with sparse matrices
+    # extra steps here are for compatibility with sparse matrices
+    s = np.asarray(Z.sum(0)).ravel()
     isrl = np.diag(np.power(s, -0.5)) # isrl = inverse square root of lambda
     ztz = Z.T.dot(Z) # ztz = Z transpose Z
     if scipy.sparse.issparse(ztz):
@@ -76,14 +76,15 @@ class AnchorGraphHasher:
     eigenvalues = eigenvalues[I]
     V = V[:,I]
     
-    # this is also essentially what they do in the matlab since check for equality to 1
-    # doesn't work because of floating point precision
+    # this is also essentially what they do in the matlab since check for
+    # equality to 1 doesn't work because of floating point precision
     if eigenvalues[0] > 0.99999999:
       eigenvalues = eigenvalues[1:]
       V = V[:,1:]
     eigenvalues = eigenvalues[0:numhashbits]
     V = V[:,0:numhashbits]
-    # paper also multiplies by sqrt(n), but their matlab code doesn't. isn't necessary.
+    # paper also multiplies by sqrt(n), but their matlab code doesn't.
+    # isn't necessary.
     
     W = np.dot(isrl, np.dot(V, np.diag(np.power(eigenvalues, -0.5))))
     return W
@@ -94,7 +95,6 @@ class AnchorGraphHasher:
     m = anchors.shape[0]
     
     # tried using for loops. too slow.
-    #sqdist = scipy.spatial.distance.cdist(data, anchors,'sqeuclidean') # too slow
     sqdist = utils.pdist2(data, anchors, 'sqeuclidean')
     val = np.zeros((n, nnanchors))
     pos = np.zeros((n, nnanchors), dtype=np.int)
@@ -103,39 +103,28 @@ class AnchorGraphHasher:
       val[:,i] = sqdist[np.arange(len(sqdist)), pos[:,i]]
       sqdist[np.arange(n), pos[:,i]] = float('inf')
     
-    # would be cleaner to calculate sigma in its own separate method, but this is more efficient
+    # would be cleaner to calculate sigma in its own separate method,
+    # but this is more efficient
     if sigma is None:
       dist = np.sqrt(val[:,nnanchors-1])
       sigma = np.mean(dist) / np.sqrt(2)
     
     # Next, calculate formula (2) from the paper
-    # this calculation differs from the matlab. In the matlab, the RBF kernel's exponent only
-    # has sigma^2 in the denominator. Here, 2 * sigma^2. This is accounted for when auto-calculating sigma
-    # above by dividing by sqrt(2)
+    # this calculation differs from the matlab. In the matlab, the RBF
+    # kernel's exponent only has sigma^2 in the denominator. Here,
+    # 2 * sigma^2. This is accounted for when auto-calculating sigma above by
+    #  dividing by sqrt(2)
     
-    # Here is how you first calculated formula (2), which is similar in approach to the matlab code (not with
-    # respect to the difference mentioned above, though). However, you encountered floating point issues.
-    #val = np.exp(-val / (2 * np.power(sigma,2)))
-    #s = val.sum(1)[np.newaxis].T # had to do np.newaxis and transpose to make it a column vector
-    #                             # just calling ".T" without that wasn't working. reshape would
-    #                             # also work. I'm not sure which is preferred.
-    #repmat = np.tile(s, (1,nnanchors))
-    #val = val / repmat
-
-    # So work in log space and then exponentiate, to avoid the floating point issues.
-    # for the denominator, the following code avoids even more precision issues, by relying
-    # on the fact that the log of the sum of exponentials, equals some constant plus the log of sum
-    # of exponentials of numbers subtracted by the constant:
+    # Work in log space and then exponentiate, to avoid the floating point
+    # issues. for the denominator, the following code avoids even more
+    # precision issues, by relying on the fact that the log of the sum of
+    # exponentials, equals some constant plus the log of sum of exponentials
+    # of numbers subtracted by the constant:
     #  log(sum_i(exp(x_i))) = m + log(sum_i(exp(x_i-m)))
     
     c = 2 * np.power(sigma,2) # bandwidth parameter
     exponent = -val / c       # exponent of RBF kernel
-    # no longer using the np.newaxis approach, since you now see keepdims option
-    #shift = np.amin(exponent, 1)[np.newaxis].T # np.axis to make column vector
     shift = np.amin(exponent, 1, keepdims=True)
-    # no longer using the np.tile approach, since numpy figures it out. You were originally doing
-    # exponent - shiftrep, but exponent - shift works the same.
-    #shiftrep = np.tile(shift, (1,nnanchors))
     denom = np.log(np.sum(np.exp(exponent - shift), 1, keepdims=True)) + shift
     val = np.exp(exponent - denom)
     
@@ -147,11 +136,10 @@ class AnchorGraphHasher:
     return (Z, sigma)
 
 if __name__ == '__main__':
+  datadir = os.path.join(utils.diroffile(__file__), 'data')
   
-  datadir = utils.diroffile(__file__) + '/../data/'
-  
-  mnist_split = scipy.io.loadmat(datadir + 'mnist_split.mat')
-  anchor_300  = scipy.io.loadmat(datadir + 'anchor_300.mat')
+  mnist_split = scipy.io.loadmat(os.path.join(datadir, 'mnist_split.mat'))
+  anchor_300  = scipy.io.loadmat(os.path.join(datadir, 'anchor_300.mat'))
   
   traindata = mnist_split['traindata']
   testdata  = mnist_split['testdata']
@@ -164,8 +152,10 @@ if __name__ == '__main__':
   nnanchors = 2 # number-of-nearest anchors
   
   for numbits in [12,16,24,32,48,64]:
-    agh, trainY = AnchorGraphHasher.train(traindata, anchors, numbits, nnanchors, sigma)
+    agh, trainY = AnchorGraphHasher.train(
+      traindata, anchors, numbits, nnanchors, sigma)
     testY = agh.hash(testdata)
-    precision = AnchorGraphHasher.test(trainY, testY, traingnd, testgnd, precisionradius)
-    print '1-AGH: the Hamming radius %d precision for %d bits is %f.' % (precisionradius, numbits, precision)
-  
+    precision = AnchorGraphHasher.test(
+      trainY, testY, traingnd, testgnd, precisionradius)
+    print '1-AGH: the Hamming radius {} precision for {} bits is {}.'.format(
+      precisionradius, numbits, precision)
