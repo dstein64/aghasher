@@ -6,8 +6,6 @@ import scipy.linalg
 import scipy.io
 import utils
 
-utils.checknumpy() # not necessary since already called... (when import util)
-
 class AnchorGraphHasher:
   def __init__(self, W, anchors, nnanchors, sigma):
     self.W = W

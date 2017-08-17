@@ -1,31 +1,5 @@
 import numpy as np
 import os
-import sys
-
-# check if a module exists
-def canimport(modname):
-  exists = True
-  try:
-    __import__(modname)
-  except ImportError:
-    exists = False
-  return exists
-
-# print string to stderr, automatically inserting newline at end
-def printstderr(s):
-  sys.stderr.write(s + '\n')
-
-checknumpywarned = False # only have to display once
-# prints a warning to stderr if numpy is not using a properly linked BLAS
-def checknumpy():
-  global checknumpywarned
-  if (not checknumpywarned) and (not canimport('numpy.core._dotblas')):
-    warn = 'WARNING: Numpy is using a fallback for BLAS.\n' + \
-           '         This is slow! Please configure numpy to use BLAS.'
-    printstderr(warn)
-    checknumpywarned = True
-
-checknumpy()
 
 # scipy has a cdist function that works like matlab's pdist2 function.
 # but for square euclidean distance it is slow for the version of scipy you have
@@ -53,8 +27,8 @@ def pdist2(X, Y, metric):
     # possibly be due to differences in numpy/blas versions across machines.
     return np.clip(sqeuc, 0, np.inf)
   elif metric == 'hamming':
-    # scipy cdist supports hamming distance, but is twice as slow as yours (
-    # even before multiplying by dim, and casting as int), possibly because
+    # scipy cdist supports hamming distance, but is twice as slow as yours
+    # (even before multiplying by dim, and casting as int), possibly because
     # it supports non-booleans, but I'm not sure...
     # looping over data points in X and Y, and calculating hamming distance
     # to put in a hamdis matrix is too slow. this vectorized solution works
