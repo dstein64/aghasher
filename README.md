@@ -26,8 +26,8 @@ embedding for the training data.
 
 AnchorGraphHasher.train takes 5 arguments:
 
-* **X** An *n-by-d* numpy.ndarray with training data. The rows correspond to observations, and the columns correspond
-  to dimensions.
+* **X** An *n-by-d* numpy.ndarray with training data. The rows correspond to *n* observations, and the columns
+  correspond to *d* dimensions.
 * **anchors** An *m-by-d* numpy.ndarray with anchors. *m* is the total number of anchors. Rows correspond to anchors,
   and columns correspond to dimensions. The dimensionality of the anchors much match the dimensionality of the training
   data.
@@ -47,7 +47,7 @@ out-of-sample data is done with the object's *hash* method.
     
 The hash method takes one argument:
 
-* **X** An *n-by-d* numpy.ndarray with data. The rows correspond to observations, and the columns correspond to
+* **X** An *n-by-d* numpy.ndarray with data. The rows correspond to *n* observations, and the columns correspond to *d*
 dimensions. The dimensionality of the data much match the dimensionality of the training data used to train the
 AnchorGraphHasher.
 
