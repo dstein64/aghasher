@@ -8,23 +8,7 @@ Dependencies
 
 *aghasher* requires Python 2.7 with numpy and scipy. These should be linked with a BLAS implementation (e.g., OpenBLAS,
 ATLAS, Intel MKL). Without being linked to BLAS, numpy/scipy will use a fallback that causes PyAnchorGraphHasher to run
-over 50x slower. If BLAS is not linked, a warning message will be displayed when running the code.
-
-The latter packages can be installed with pip.
-
-    $ pip install numpy scipy
-
-Or on Ubuntu using apt-get.
-
-    $ apt-get install python-numpy python-scipy
-
-Or on OS X using macports.
-
-    $ port install py-numpy py-scipy
-
-or brew.
-
-    $ brew install numpy scipy
+over 50x slower.
 
 How To Use
 ----------
