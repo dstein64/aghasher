@@ -22,12 +22,12 @@ To use aghasher, first import the *aghasher* module.
 An AnchorGraphHasher is constructed using the *train* method, which returns an AnchorGraphHasher and the hash bit
 embedding for the training data.
 
-    agh, y_train = aghasher.AnchorGraphHasher.train(train_data, anchors, num_bits, nn_anchors, sigma)
+    agh, Y_train = aghasher.AnchorGraphHasher.train(X, anchors, num_bits, nn_anchors, sigma)
 
 AnchorGraphHasher.train takes 5 arguments:
 
-* **train_data** An *n-by-d* numpy.ndarray with training data. The rows correspond to observations, and the columns
-  correspond to dimensions.
+* **X** An *n-by-d* numpy.ndarray with training data. The rows correspond to observations, and the columns correspond
+  to dimensions.
 * **anchors** An *m-by-d* numpy.ndarray with anchors. *m* is the total number of anchors. Rows correspond to anchors,
   and columns correspond to dimensions. The dimensionality of the anchors much match the dimensionality of the training
   data.
@@ -43,11 +43,11 @@ AnchorGraphHasher.train takes 5 arguments:
 With an AnchorGraphHasher object, which has variable name *agh* in the preceding and following examples, hashing
 out-of-sample data is done with the object's *hash* method.
 
-    agh.hash(data)
+    agh.hash(X)
     
 The hash method takes one argument:
 
-* **data** An *n-by-d* numpy.ndarray with data. The rows correspond to observations, and the columns correspond to
+* **X** An *n-by-d* numpy.ndarray with data. The rows correspond to observations, and the columns correspond to
 dimensions. The dimensionality of the data much match the dimensionality of the training data used to train the
 AnchorGraphHasher.
 
@@ -59,16 +59,16 @@ The elements of the returned array are boolean values that correspond to bits.
 
 Testing is performed with the AnchorGraphHasher.test method.
 
-    precision = AnchorGraphHasher.test(y_train, y_test, t_train, t_test, radius)
+    precision = AnchorGraphHasher.test(Y_train, Y_test, T_train, T_test, radius)
     
 AnchorGraphHasher.test takes 5 arguments:
 
-* **y_train** An *n-by-r* numpy.ndarray with the hash bit embedding corresponding to the training data. The rows
+* **Y_train** An *n-by-r* numpy.ndarray with the hash bit embedding corresponding to the training data. The rows
   correspond to the *n* observations, and the columns correspond to the *r* hash bits.
-* **y_test** An *m-by-r* numpy.ndarray with the hash bit embedding corresponding to the testing data. The rows
+* **Y_test** An *m-by-r* numpy.ndarray with the hash bit embedding corresponding to the testing data. The rows
   correspond to the *m* observations, and the columns correspond to the *r* hash bits.
-* **t_train** An *n-by-1* numpy.ndarray with the ground truth labels for the training data.
-* **t_test** An *m-by-1* numpy.ndarray with the ground truth labels for the testing data.
+* **T_train** An *n-by-1* numpy.ndarray with the ground truth labels for the training data.
+* **T_test** An *m-by-1* numpy.ndarray with the ground truth labels for the testing data.
 * **radius** (optional; defaults to 2) Hamming radius to use for calculating precision.
 
 ### Executing aghasher.py

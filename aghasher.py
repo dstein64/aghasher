@@ -15,7 +15,7 @@ class AnchorGraphHasher:
     self.sigma = sigma
     
   @classmethod
-  def train(cls, train_data, anchors, num_hashbits=12, nn_anchors=2, sigma=None):
+  def train(cls, X, anchors, num_hashbits=12, nn_anchors=2, sigma=None):
     m = anchors.shape[0]
     # num_hashbits must be less than num anchors because we get m-1
     # eigenvalues from an m-by-m matrix.
@@ -26,14 +26,14 @@ class AnchorGraphHasher:
         'anchors ({}).').format(num_hashbits, m
       )
       raise ValueError(valerr)
-    Z, sigma = cls._Z(train_data, anchors, nn_anchors, sigma)
+    Z, sigma = cls._Z(X, anchors, nn_anchors, sigma)
     W = cls._W(Z, num_hashbits)
     Y = cls._hash(Z, W)
     agh = cls(W, anchors, nn_anchors, sigma)
     return agh, Y
   
-  def hash(self, data):
-    Z, _ = self._Z(data, self.anchors, self.nn_anchors, self.sigma)
+  def hash(self, X):
+    Z, _ = self._Z(X, self.anchors, self.nn_anchors, self.sigma)
     return self._hash(Z, self.W)
   
   @staticmethod
@@ -42,13 +42,13 @@ class AnchorGraphHasher:
     return Y > 0
   
   @staticmethod
-  def test(y_train, y_test, t_train, t_test, radius=2):
+  def test(Y_train, Y_test, T_train, T_test, radius=2):
     # Flatten arrays
-    t_test = t_test.ravel()
-    t_train = t_train.ravel()
-    ntest = y_test.shape[0]
+    T_test = T_test.ravel()
+    T_train = T_train.ravel()
+    ntest = Y_test.shape[0]
     
-    hamdis = utils.pdist2(y_train, y_test, 'hamming')
+    hamdis = utils.pdist2(Y_train, Y_test, 'hamming')
     
     precision = np.zeros(ntest)
     for j in xrange(ntest):
@@ -58,7 +58,7 @@ class AnchorGraphHasher:
       if ln == 0:
         precision[j] = 0
       else:
-        numerator = len(np.flatnonzero(t_train[lst] == t_test[j]))
+        numerator = len(np.flatnonzero(T_train[lst] == T_test[j]))
         precision[j] = numerator / float(ln)
         
     return np.mean(precision)
@@ -91,11 +91,11 @@ class AnchorGraphHasher:
     return W
   
   @staticmethod
-  def _Z(data, anchors, nn_anchors, sigma):
-    n = data.shape[0]
+  def _Z(X, anchors, nn_anchors, sigma):
+    n = X.shape[0]
     m = anchors.shape[0]
     
-    sqdist = utils.pdist2(data, anchors, 'sqeuclidean')
+    sqdist = utils.pdist2(X, anchors, 'sqeuclidean')
     val = np.zeros((n, nn_anchors))
     pos = np.zeros((n, nn_anchors), dtype=np.int)
     for i in range(nn_anchors):
@@ -137,10 +137,10 @@ if __name__ == '__main__':
   mnist_split = scipy.io.loadmat(os.path.join(datadir, 'mnist_split.mat'))
   anchor_300  = scipy.io.loadmat(os.path.join(datadir, 'anchor_300.mat'))
   
-  traindata = mnist_split['traindata']
-  testdata  = mnist_split['testdata']
-  traingnd  = mnist_split['traingnd']
-  testgnd   = mnist_split['testgnd']
+  X_train = mnist_split['traindata']
+  X_test  = mnist_split['testdata']
+  T_train  = mnist_split['traingnd']
+  T_test   = mnist_split['testgnd']
   anchors   = anchor_300['anchor']
   
   radius = 2     # hamming radius 2 precision
@@ -148,10 +148,10 @@ if __name__ == '__main__':
   nnanchors = 2  # number-of-nearest anchors
   
   for numbits in [12,16,24,32,48,64]:
-    agh, y_train = AnchorGraphHasher.train(
-      traindata, anchors, numbits, nnanchors, sigma)
-    y_test = agh.hash(testdata)
+    agh, Y_train = AnchorGraphHasher.train(
+      X_train, anchors, numbits, nnanchors, sigma)
+    Y_test = agh.hash(X_test)
     precision = AnchorGraphHasher.test(
-      y_train, y_test, traingnd, testgnd, radius)
+      Y_train, Y_test, T_train, T_test, radius)
     print '1-AGH: the Hamming radius {} precision for {} bits is {}.'.format(
       radius, numbits, precision)
