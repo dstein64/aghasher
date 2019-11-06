@@ -52,7 +52,7 @@ class AnchorGraphHasher:
         hamdis = utils.pdist2(Y_train, Y_test, 'hamming')
 
         precision = np.zeros(ntest)
-        for j in xrange(ntest):
+        for j in range(ntest):
             ham = hamdis[:, j]
             lst = np.flatnonzero(ham <= radius)
             ln = len(lst)
@@ -66,7 +66,7 @@ class AnchorGraphHasher:
 
     @staticmethod
     def _W(Z, num_hashbits):
-        # The extra steps here is for compatibility with sparse matrices.
+        # The extra steps here are for compatibility with sparse matrices.
         s = np.asarray(Z.sum(0)).ravel()
         isrl = np.diag(np.power(s, -0.5))  # isrl = inverse square root of lambda
         ztz = Z.T.dot(Z)  # ztz = Z transpose Z
@@ -133,7 +133,7 @@ class AnchorGraphHasher:
 
 
 if __name__ == '__main__':
-    datadir = os.path.join(utils.diroffile(__file__), 'data')
+    datadir = os.path.join(utils.diroffile(__file__))
 
     mnist_split = scipy.io.loadmat(os.path.join(datadir, 'mnist_split.mat'))
     anchor_300 = scipy.io.loadmat(os.path.join(datadir, 'anchor_300.mat'))
@@ -154,5 +154,4 @@ if __name__ == '__main__':
         Y_test = agh.hash(X_test)
         precision = AnchorGraphHasher.test(
             Y_train, Y_test, T_train, T_test, radius)
-        print '1-AGH: the Hamming radius {} precision for {} bits is {}.'.format(
-            radius, numbits, precision)
+        print(f'1-AGH: the Hamming radius {radius} precision for {numbits} bits is {precision}.')

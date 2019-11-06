@@ -6,7 +6,7 @@ An implementation of the Anchor Graph Hashing algorithm (AGH-1), presented in *H
 Dependencies
 ------------
 
-*aghasher* requires Python 2.7 with numpy and scipy. These should be linked with a BLAS implementation (e.g., OpenBLAS,
+*aghasher* requires Python 3 with numpy and scipy. These should be linked with a BLAS implementation (e.g., OpenBLAS,
 ATLAS, Intel MKL). Without being linked to BLAS, numpy/scipy will use a fallback that causes PyAnchorGraphHasher to run
 over 50x slower.
 
