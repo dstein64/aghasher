@@ -27,9 +27,9 @@ class AnchorGraphHasher:
             raise ValueError(valerr)
         Z, sigma = cls._Z(X, anchors, nn_anchors, sigma)
         W = cls._W(Z, num_hashbits)
-        Y = cls._hash(Z, W)
+        H = cls._hash(Z, W)
         agh = cls(W, anchors, nn_anchors, sigma)
-        return agh, Y
+        return agh, H
 
     def hash(self, X):
         Z, _ = self._Z(X, self.anchors, self.nn_anchors, self.sigma)
@@ -37,17 +37,17 @@ class AnchorGraphHasher:
 
     @staticmethod
     def _hash(Z, W):
-        Y = Z.dot(W)
-        return Y > 0
+        H = Z.dot(W)
+        return H > 0
 
     @staticmethod
-    def test(Y_train, Y_test, T_train, T_test, radius=2):
+    def test(H_train, H_test, y_train, y_test, radius=2):
         # Flatten arrays
-        T_test = T_test.ravel()
-        T_train = T_train.ravel()
-        ntest = Y_test.shape[0]
+        y_test = y_test.ravel()
+        y_train = y_train.ravel()
+        ntest = H_test.shape[0]
 
-        hamdis = utils.pdist2(Y_train, Y_test, 'hamming')
+        hamdis = utils.pdist2(H_train, H_test, 'hamming')
 
         precision = np.zeros(ntest)
         for j in range(ntest):
@@ -57,7 +57,7 @@ class AnchorGraphHasher:
             if ln == 0:
                 precision[j] = 0
             else:
-                numerator = len(np.flatnonzero(T_train[lst] == T_test[j]))
+                numerator = len(np.flatnonzero(y_train[lst] == y_test[j]))
                 precision[j] = numerator / float(ln)
 
         return np.mean(precision)

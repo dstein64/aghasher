@@ -8,7 +8,7 @@ An implementation of the Anchor Graph Hashing algorithm (AGH-1), presented in *H
 Dependencies
 ------------
 
-*aghasher* supports Python 2.7 and Python 3 with numpy and scipy. These should be linked with a BLAS implementation
+*aghasher* supports Python 2.7 and Python 3, with numpy and scipy. These should be linked with a BLAS implementation
 (e.g., OpenBLAS, ATLAS, Intel MKL). Without being linked to BLAS, numpy/scipy will use a fallback that causes
 PyAnchorGraphHasher to run over 50x slower.
 
@@ -33,7 +33,7 @@ To use aghasher, first import the *aghasher* module.
 An AnchorGraphHasher is constructed using the *train* method, which returns an AnchorGraphHasher and the hash bit
 embedding for the training data.
 
-    agh, Y_train = aghasher.AnchorGraphHasher.train(X, anchors, num_bits, nn_anchors, sigma)
+    agh, H_train = aghasher.AnchorGraphHasher.train(X, anchors, num_bits, nn_anchors, sigma)
 
 AnchorGraphHasher.train takes 5 arguments:
 
@@ -70,16 +70,16 @@ The elements of the returned array are boolean values that correspond to bits.
 
 Testing is performed with the AnchorGraphHasher.test method.
 
-    precision = AnchorGraphHasher.test(Y_train, Y_test, T_train, T_test, radius)
+    precision = AnchorGraphHasher.test(H_train, H_test, y_train, y_test, radius)
     
 AnchorGraphHasher.test takes 5 arguments:
 
-* **Y_train** An *n-by-r* numpy.ndarray with the hash bit embedding corresponding to the training data. The rows
+* **H_train** An *n-by-r* numpy.ndarray with the hash bit embedding corresponding to the training data. The rows
   correspond to the *n* observations, and the columns correspond to the *r* hash bits.
-* **Y_test** An *m-by-r* numpy.ndarray with the hash bit embedding corresponding to the testing data. The rows
+* **H_test** An *m-by-r* numpy.ndarray with the hash bit embedding corresponding to the testing data. The rows
   correspond to the *m* observations, and the columns correspond to the *r* hash bits.
-* **T_train** An *n-by-1* numpy.ndarray with the ground truth labels for the training data.
-* **T_test** An *m-by-1* numpy.ndarray with the ground truth labels for the testing data.
+* **y_train** An *n-by-1* numpy.ndarray with the ground truth labels for the training data.
+* **y_test** An *m-by-1* numpy.ndarray with the ground truth labels for the testing data.
 * **radius** (optional; defaults to 2) Hamming radius to use for calculating precision.
 
 Tests
