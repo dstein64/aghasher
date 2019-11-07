@@ -6,9 +6,9 @@ An implementation of the Anchor Graph Hashing algorithm (AGH-1), presented in *H
 Dependencies
 ------------
 
-*aghasher* requires Python 3 with numpy and scipy. These should be linked with a BLAS implementation (e.g., OpenBLAS,
-ATLAS, Intel MKL). Without being linked to BLAS, numpy/scipy will use a fallback that causes PyAnchorGraphHasher to run
-over 50x slower.
+*aghasher* Python 2.7 and Python 3 with numpy and scipy. These should be linked with a BLAS implementation (e.g.,
+OpenBLAS, ATLAS, Intel MKL). Without being linked to BLAS, numpy/scipy will use a fallback that causes
+PyAnchorGraphHasher to run over 50x slower.
 
 How To Use
 ----------
@@ -71,16 +71,15 @@ AnchorGraphHasher.test takes 5 arguments:
 * **T_test** An *m-by-1* numpy.ndarray with the ground truth labels for the testing data.
 * **radius** (optional; defaults to 2) Hamming radius to use for calculating precision.
 
-### Executing aghasher.py
+Tests
+-----
 
-*aghasher.py* can be executed from the command line.
+Tests are in [tests/](https://github.com/dstein64/kmeans1d/blob/master/tests).
 
-    $ python aghasher.py
-    
-Running aghasher.py runs the \__main__ code, which uses an AnchorGraphHasher to replicate the training/testing performed
-in the Matlab code.
-
-The code in the \__main__ section serves as an example of how to use AnchorGraphHasher.
+```sh
+# Run tests
+$ python3 -m unittest discover tests -v
+```
 
 Differences from the Matlab Reference Implementation
 ----------------------------------------------------
