@@ -85,7 +85,7 @@ AnchorGraphHasher.test takes 5 arguments:
 Tests
 -----
 
-Tests are in [tests/](https://github.com/dstein64/kmeans1d/blob/master/tests).
+Tests are in [tests/](https://github.com/dstein64/aghasher/blob/master/tests).
 
 ```sh
 # Run tests
