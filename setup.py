@@ -28,6 +28,7 @@ setup(
     keywords=['anchor-graph-hashing', 'hashing', 'locality-sensitive-hashing', 'machine-learning'],
     license='MIT',
     long_description=open('README.md').read(),
+    long_description_content_type='text/markdown',
     name='aghasher',
     package_data={'aghasher': ['version.txt']},
     packages=['aghasher'],
