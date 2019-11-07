@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/dstein64/aghasher.svg?branch=master)](https://travis-ci.org/dstein64/aghasher)
+
 aghasher
 ========
 
@@ -9,6 +11,15 @@ Dependencies
 *aghasher* Python 2.7 and Python 3 with numpy and scipy. These should be linked with a BLAS implementation (e.g.,
 OpenBLAS, ATLAS, Intel MKL). Without being linked to BLAS, numpy/scipy will use a fallback that causes
 PyAnchorGraphHasher to run over 50x slower.
+
+Installation
+------------
+
+[aghasher](https://pypi.python.org/pypi/aghasher) is available on PyPI, the Python Package Index.
+
+```sh
+$ pip install aghasher
+```
 
 How To Use
 ----------
