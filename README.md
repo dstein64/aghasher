@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/dstein64/aghasher.svg?branch=master)](https://travis-ci.org/dstein64/aghasher)
+[![Build Status](https://github.com/dstein64/aghasher/workflows/build/badge.svg)](https://github.com/dstein64/aghasher/actions)
 
 aghasher
 ========
