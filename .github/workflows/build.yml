@@ -1,9 +1,11 @@
 name: build
+permissions:
+  contents: read
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
   schedule:
     # Run weekly (* is a special character in YAML, so quote the string)
     - cron:  '0 0 * * 0'
@@ -15,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
-        python-version: [2.7, 3.5, 3.6, 3.7, 3.8, 3.9, '3.10']
+        python-version: ['2.7', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10']
 
     steps:
     - name: Checkout
