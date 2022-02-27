@@ -1,4 +1,6 @@
 name: build
+# When the 'permissions' key is specified, unspecified permission scopes (e.g.,
+# actions, checks, etc.) are set to no access (none).
 permissions:
   contents: read
 on:
