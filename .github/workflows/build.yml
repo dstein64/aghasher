@@ -26,16 +26,26 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
         python-version: ['2.7', '3.5', '3.6', '3.7', '3.8', '3.9', '3.10']
+        exclude:
+          # Python 2.7, 3.5, and 3.6 are not supported on GitHub-hosted Ubuntu
+          # runners as of Ubuntu 22.04.
+          # https://github.com/actions/setup-python/issues/544#issuecomment-1332535877
+          - os: ubuntu-latest
+            python-version: '2.7'
+          - os: ubuntu-latest
+            python-version: '3.5'
+          - os: ubuntu-latest
+            python-version: '3.6'
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         # When the ref is empty, HEAD will be checked out.
         ref: ${{ github.event.inputs.git-ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
 
