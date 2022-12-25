@@ -96,7 +96,7 @@ class AnchorGraphHasher:
 
         sqdist = utils.pdist2(X, anchors, 'sqeuclidean')
         val = np.zeros((n, nn_anchors))
-        pos = np.zeros((n, nn_anchors), dtype=np.int)
+        pos = np.zeros((n, nn_anchors), dtype=int)
         for i in range(nn_anchors):
             pos[:, i] = np.argmin(sqdist, 1)
             val[:, i] = sqdist[np.arange(len(sqdist)), pos[:, i]]
