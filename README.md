@@ -8,7 +8,7 @@ An implementation of the Anchor Graph Hashing algorithm (AGH-1), presented in *H
 Dependencies
 ------------
 
-*aghasher* supports `python>=3.5`, with numpy and scipy. These should be linked with a BLAS implementation
+*aghasher* supports `python>=3.6`, with numpy and scipy. These should be linked with a BLAS implementation
 (e.g., OpenBLAS, ATLAS, Intel MKL). Without being linked to BLAS, numpy/scipy will use a fallback that causes
 PyAnchorGraphHasher to run over 50x slower.
 
